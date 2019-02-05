@@ -133,7 +133,7 @@ int main(/*int argc, char *argv[]*/)
       scanf("%d %d", &a, &b);
       printf("a = %d\npower(%d,%d) = %d\n",a,a,b, powerB(a,b) );
       break;
-
+ 
     case 4:
       printf("Input number and grade: ");
       scanf("%d %d", &a, &b);
