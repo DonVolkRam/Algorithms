@@ -1,11 +1,10 @@
-﻿// Graph.cpp: определяет точку входа для консольного приложения.
+// Graph.cpp: определяет точку входа для консольного приложения.
 //
-#include "pch.h"
+#include "stdafx.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <math.h>
-#include <queue>
+#include <stdbool.h>
 
 #define MaxRank 64
 #define FName1 "D:\\Projects\\VS\\Graph\\Graph\\Graph.txt"
@@ -15,9 +14,48 @@
 int Graph[MaxRank][MaxRank];
 int Visit[MaxRank];
 bool Used[MaxRank];
-int Depth, Width;
+int Quene[MaxRank];
+int Count=0;
+int Depth=1, Width=1;
 int Rank;
 
+//Функции работы с очередью
+//начало
+void B_Push(int U)
+{	
+	Quene[Count] = U;
+	Count++;
+}
+
+void B_Pop()
+{
+	for (int i = 0; i < Count; i++)
+	{
+		Quene[i] = Quene[i + 1];
+	}
+	Count--;
+}
+
+int B_Empty()
+{
+	if (Count)
+		return false;
+	else
+		return true;
+}
+
+int B_Front()
+{
+	return Quene[0];
+}
+
+int B_Back()
+{
+	return Quene[Count-1];
+}
+//конец
+
+//чтение матрицы из файла
 int Gr_Read(char* filename, int** Buf)
 {
 	int rank = 0;
@@ -37,9 +75,9 @@ int Gr_Read(char* filename, int** Buf)
 				{
 					fscanf(in, "%d", &c);
 					*Buf = c;
-					*Buf++;
+					*Buf++;					
 				}
-				for (int j = 0; j < MaxRank - rank; j++)
+				for (int j = 0; j < MaxRank-rank; j++)
 					*Buf++;
 			}
 		}
@@ -47,9 +85,10 @@ int Gr_Read(char* filename, int** Buf)
 	}
 	else
 		return -1;
-	return Rank = rank;
+	return Rank=rank;
 }
 
+//получение матрицы в буфер
 void Gr_GetMatrix(int** Buf[MaxRank][MaxRank])
 {
 	for (int i = 0; i < Rank; i++)
@@ -61,7 +100,7 @@ void Gr_GetMatrix(int** Buf[MaxRank][MaxRank])
 	}
 }
 
-
+//рекурсивный обход в глубину
 void Gr_dfs(int v)
 {
 	Depth = 1;
@@ -76,29 +115,41 @@ void Gr_dfs(int v)
 		}
 }
 
-void Gr_bfs(int u) {
-	Used[u] = true;
-	queue <int> q;
-	q.push(u);
-	while (!q.empty()) {
-		int u = q.front();
-		q.pop();
-		for (int i = 0; i < (int)g[u].size(); i++) {
-			int v = g[u][i];
-			if (!Used[v]) {
-				Used[v] = true;
-				q.push(v);
+//обход в ширину
+int Gr_Width(int u) 
+{
+	Width = 1;
+	Used[u-1] = true;
+	B_Push(u);
+	int num = 0;  //количество точек смежных с текущей вершиной
+	while (!B_Empty()) 
+	{
+		int u = B_Front();		
+		B_Pop();		
+		num--;
+		if(num==0)
+			Width++;
+		for (int i = 0; i < Rank; i++) 
+		{		
+			if (!Used[i] && Graph[u-1][i])
+			{
+				Used[i] = true;				
+				B_Push(i+1);
+				num++;
 			}
 		}
 	}
+	return Width;
 }
 
+//получение значения обхода графа в глубину
 int Gr_Depth(int start)
-{
+{	
 	Gr_dfs(start);
 	return Depth;
 }
 
+//печать матрицы графа
 void Gr_Print(int rank, int Buf[MaxRank][MaxRank])
 {
 	for (int i = 0; i < rank; i++)
@@ -111,7 +162,7 @@ void Gr_Print(int rank, int Buf[MaxRank][MaxRank])
 
 int main()
 {
-	//	int Matrix[MaxRank][MaxRank];
+//	int Matrix[MaxRank][MaxRank];
 	int rank;
 	printf("Hello\n");
 
@@ -119,9 +170,12 @@ int main()
 	if (rank > 0)
 		printf("Graph Rank is %d\n", rank);
 	else
-		printf("Error Reading file\n");
+		printf("Error Reading file");
 	Gr_Print(rank, Graph);
-	printf("\nDepth is %d\n", Gr_Depth(1));
+	printf("\nDepth is %d\n",Gr_Depth(1));
+
+	printf("\nWidth is %d\n", Gr_Width(1));
+
 	char temp;
 	scanf("%c", &temp);
 	return 0;
