@@ -92,7 +92,7 @@ int main(/*int argc, char *argv[]*/)
           if(input==11)
             break;
       }
-      break;
+      break; 
 
     case 3:
       printf("Input number and I show you all automorph number before input number");
